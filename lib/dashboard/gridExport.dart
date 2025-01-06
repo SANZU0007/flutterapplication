@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:testapp/dashboard/Grid_export_card_design.dart';
 import 'package:testapp/dashboard/solar_dashboard_card_data.dart';
 
-class DashboardCard extends StatelessWidget {
+class Gridexport extends StatelessWidget {
   final String value2;
   final String displayLabel;
   final Map<String, dynamic>? response;
 
-  const DashboardCard({
+  const Gridexport({
     Key? key,
     required this.value2,
     required this.displayLabel,
@@ -161,7 +162,7 @@ class DashboardCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    child: SolarDashboardCardData(
+                    child: GridExportCardData(
                       value1: '20',
                       Apiresponse: response,
                     ),

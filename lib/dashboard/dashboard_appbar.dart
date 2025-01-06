@@ -3,8 +3,10 @@ import 'package:testapp/colors.dart';
 
 class DashboardAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Future<void> Function() fetchData;
+  final String displayID;
 
-  const DashboardAppBar({super.key, required this.fetchData});
+  const DashboardAppBar(
+      {super.key, required this.fetchData, required this.displayID});
 
   @override
   _DashboardAppBarState createState() => _DashboardAppBarState();
@@ -17,9 +19,9 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text(
-        'Dashboard',
-        style: TextStyle(
+      title: Text(
+        widget.displayID, // Use widget.displayID to access the displayID
+        style: const TextStyle(
           color: Colors
               .white, // Set the color of the title text (replace with primaryColorbg if needed)
         ),

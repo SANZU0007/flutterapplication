@@ -1,7 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:testapp/colors.dart';
 import 'package:testapp/dashboard/dashboard_card.dart';
+import 'package:testapp/dashboard/gridExport.dart';
+import 'package:testapp/dashboard/gridImport.dart';
+import 'package:testapp/dashboard/inverterDashboard.dart';
+import 'package:testapp/dashboard/stringdata.dart';
 import 'dashboard_appbar.dart';
 
 class Dashboard extends StatefulWidget {
@@ -30,6 +35,10 @@ class _DashboardState extends State<Dashboard> {
   String? _SOLAR_TOTAL_POWER_LIVE_DASHBOARD;
   String? _SOLAR_TOTAL_POWER_LIVE_DASHBOARD_PL;
   String? _IRRADIATION_LIVE_PERCENT_DASHBOARD;
+  int? _NO_OF_SOLAR_STRINGS;
+  String? _SYS_ID;
+  String? _LAST_UPDATED;
+  Map<String, dynamic>? _TotalApiResponse;
 
   // Fetch data from the API
   Future<void> fetchData() async {
@@ -41,7 +50,7 @@ class _DashboardState extends State<Dashboard> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         setState(() {
-          // Extracting INDIVDIUAL_INVERTER_DATA_SOLAR from the response
+          _TotalApiResponse = data;
           _inverterData = data['INDIVDIUAL_INVERTER_DATA_SOLAR'] ?? [];
           _solarinverterData = data['SOLAR_TOTAL_POWER_LIVE_DASHBOARD'] ?? '0';
           _SOLAR_TOTAL_POWER_LIVE_DASHBOARD =
@@ -50,13 +59,16 @@ class _DashboardState extends State<Dashboard> {
               data['SOLAR_TOTAL_POWER_LIVE_PERCENT'] ?? '0';
           _IRRADIATION_LIVE_PERCENT_DASHBOARD =
               data['IRRADIATION_LIVE_PERCENT_DASHBOARD'] ?? '0';
+          _NO_OF_SOLAR_STRINGS = data['NO_OF_SOLAR_STRINGS'] ?? 0;
+          _SYS_ID = data['SYS_ID'] ?? '0';
+          _LAST_UPDATED = data['LAST_UPDATED'] ?? '0';
         });
-
-        print(data['LAST_UPDATED'] ?? '0');
-        print(_IRRADIATION_LIVE_PERCENT_DASHBOARD);
-        print(_SOLAR_TOTAL_POWER_LIVE_DASHBOARD_PL);
-        print(_SOLAR_TOTAL_POWER_LIVE_DASHBOARD);
-        print(_solarinverterData);
+        print(data);
+        // print(data['LAST_UPDATED'] ?? '0');
+        // print(_IRRADIATION_LIVE_PERCENT_DASHBOARD);
+        // print(_SOLAR_TOTAL_POWER_LIVE_DASHBOARD_PL);
+        // print(_SOLAR_TOTAL_POWER_LIVE_DASHBOARD);
+        // print(_solarinverterData);
       } else {
         throw Exception(
             'Failed to load data. Status code: ${response.statusCode}');
@@ -76,9 +88,12 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: DashboardAppBar(fetchData: fetchData),
+      appBar: DashboardAppBar(
+        fetchData: fetchData,
+        displayID: _SYS_ID ?? '0',
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(0.0),
         child: _inverterData == null
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -96,102 +111,129 @@ class _DashboardState extends State<Dashboard> {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          widget.name,
+                          '${widget.name},  | $_LAST_UPDATED',
+                          textAlign: TextAlign.center, // Center the text
                           style: const TextStyle(
-                            fontSize: 24,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: primaryColor,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 5),
                     Card(
                       elevation: 4,
+                      color: primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: DashboardCard(
-                          value1: _SOLAR_TOTAL_POWER_LIVE_DASHBOARD_PL ?? '0',
-                          value2: _IRRADIATION_LIVE_PERCENT_DASHBOARD ?? '0',
-                          displayLabal: _solarinverterData ?? '0',
+                        padding: const EdgeInsets.all(2.0),
+                        child: Container(
+                          width: double.infinity, // Take up the full width
+                          child: Text(
+                            'Solar',
+                            textAlign: TextAlign.center, // Center the text
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColorbg,
+                            ),
+                          ),
                         ),
                       ),
                     ),
 
-                    // Display inverter data from INDIVDIUAL_INVERTER_DATA_SOLAR
+                    // Dashboard card data
+                    Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0.0),
+                        child: DashboardCard(
+                          value2: _SOLAR_TOTAL_POWER_LIVE_DASHBOARD ?? "0",
+                          displayLabel:
+                              _SOLAR_TOTAL_POWER_LIVE_DASHBOARD ?? "0",
+                          // Provide an appropriate label
+                          response: _TotalApiResponse,
+                        )),
+
+                    // Display inverter data
                     if (_inverterData != null && _inverterData!.isNotEmpty) ...[
-                      const Text(
-                        'Inverter Data',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _inverterData!.length,
-                        itemBuilder: (context, index) {
-                          final item = _inverterData![index];
-                          return Card(
-                            elevation: 3,
-                            margin: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Inverter Name: ${item['INVERTER_NAME'] ?? 'N/A'}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text('Model: ${item['MODEL'] ?? 'N/A'}'),
-                                  Text(
-                                      'Serial Number: ${item['SERIAL_NUMBER'] ?? 'N/A'}'),
-                                  Text(
-                                      'Capacity: ${item['CAPACITY_DASHBAORD'] ?? 'N/A'}'),
-                                  Text(
-                                      'Power: ${item['POWER_DASHBOARD'] ?? 'N/A'}'),
-                                  Text(
-                                      'Energy Today: ${item['ENERGY_TODAY_DASHBOARD'] ?? 'N/A'}'),
-                                  Text(
-                                      'Energy This Month: ${item['ENERGY_THIS_MONTH_DASHBOARD'] ?? 'N/A'}'),
-                                  Text(
-                                      'Energy This Year: ${item['ENERGY_THIS_YEAR_DASHBOARD'] ?? 'N/A'}'),
-                                  Text(
-                                      'Energy Total: ${item['ENERGY_TOTAL_DASHBOARD'] ?? 'N/A'}'),
-                                  Text('GF: ${item['GF'] ?? 'N/A'}'),
-                                  Text('CUF: ${item['CUF'] ?? 'N/A'}'),
-                                  Text('PR: ${item['PR'] ?? 'N/A'}'),
-                                  Text(
-                                      'Inverter Performance: ${item['INVERTER_PERFORMANCE_PERCENT'] ?? 'N/A'}%'),
-                                  Text(
-                                      'Tool Tip: ${item['TOOL_TIP'] ?? 'N/A'}'),
-                                  const SizedBox(height: 12),
-                                  // Optionally display power and sensor info as needed
-                                  Text(
-                                      'Power PH1: ${item['POWER_PH1'] ?? 'N/A'}'),
-                                  Text(
-                                      'Volts PH1: ${item['VOLTS_PH1'] ?? 'N/A'}'),
-                                  Text(
-                                      'Amps PH1: ${item['AMPS_PH1'] ?? 'N/A'}'),
-                                  Text(
-                                      'Avg Freq: ${item['AVG_FREQ'] ?? 'N/A'}'),
-                                  Text('Avg PF: ${item['AVG_PF'] ?? 'N/A'}'),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                      const SizedBox(height: 12),
+                      Inverterdashboard(
+                        value1: _SOLAR_TOTAL_POWER_LIVE_DASHBOARD_PL ?? '0',
+                        value2: _IRRADIATION_LIVE_PERCENT_DASHBOARD ?? '0',
+                        displayLabal: _solarinverterData ?? '0',
+                        inverterData: _inverterData ?? [],
+                        no_Of_Solar_Strings: _NO_OF_SOLAR_STRINGS ?? 0,
                       ),
                     ],
+
+                    if (_inverterData != null && _inverterData!.isNotEmpty) ...[
+                      Stringdata(
+                        response: _TotalApiResponse,
+                      ),
+                    ],
+                    Card(
+                      elevation: 4,
+                      color: importColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Container(
+                          width: double.infinity, // Take up the full width
+                          child: Text(
+                            'Grid Import',
+                            textAlign: TextAlign.center, // Center the text
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColorbg,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0.0),
+                        child: Gridimport(
+                          value2: _SOLAR_TOTAL_POWER_LIVE_DASHBOARD ?? "0",
+                          displayLabel:
+                              _SOLAR_TOTAL_POWER_LIVE_DASHBOARD ?? "0",
+                          // Provide an appropriate label
+                          response: _TotalApiResponse,
+                        )),
+                    Card(
+                      elevation: 4,
+                      color: exportColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Container(
+                          width: double.infinity, // Take up the full width
+                          child: Text(
+                            'Grid Export',
+                            textAlign: TextAlign.center, // Center the text
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: primaryColorbg,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0.0),
+                        child: Gridexport(
+                          value2: _SOLAR_TOTAL_POWER_LIVE_DASHBOARD ?? "0",
+                          displayLabel:
+                              _SOLAR_TOTAL_POWER_LIVE_DASHBOARD ?? "0",
+                          // Provide an appropriate label
+                          response: _TotalApiResponse,
+                        )),
                   ],
                 ),
               ),

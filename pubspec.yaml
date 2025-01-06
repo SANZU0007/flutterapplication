@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.2
-  syncfusion_flutter_gauges: ^20.1.0 # Upgrade to the latest stable version
+  syncfusion_flutter_gauges: ^20.4.43
 
 
 

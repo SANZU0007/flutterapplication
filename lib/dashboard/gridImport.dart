@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:testapp/colors.dart';
+import 'package:testapp/dashboard/Grid_import_card_design.dart';
 import 'package:testapp/dashboard/solar_dashboard_card_data.dart';
 
-class DashboardCard extends StatelessWidget {
+class Gridimport extends StatelessWidget {
   final String value2;
   final String displayLabel;
   final Map<String, dynamic>? response;
 
-  const DashboardCard({
+  const Gridimport({
     Key? key,
     required this.value2,
     required this.displayLabel,
@@ -21,15 +23,20 @@ class DashboardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Parse the value to ensure it's a valid number
-    double currentValue2 = double.tryParse(value2) ?? 0.0;
-
-    // Ensure the value is within the range of 0 to 100
-    currentValue2 = currentValue2.clamp(0.0, 100.0);
+    // double currentValue2 = double.tryParse(value2) ?? 0.0;
+    //
+    // // Ensure the value is within the range of 0 to 100
+    // currentValue2 = currentValue2.clamp(0.0, 100.0);
 
     String WEATHER_IRRADIATION = response?['WEATHER_IRRADIATION'] ?? "No data";
 
-    String IRRADIATION = response?['IRRADIATION_TODAY'] ?? "No data";
-    String PR_TODAY = response?['PR_TODAY'] ?? "No data";
+    String GRID_IMP_TOTAL_POWER_LIVE_PERCENT =
+        response?['GRID_IMP_TOTAL_POWER_LIVE_PERCENT'] ?? "No data";
+
+    double currentValue2 =
+        double.tryParse(GRID_IMP_TOTAL_POWER_LIVE_PERCENT) ?? 0.0;
+    currentValue2 = currentValue2.clamp(0.0, 100.0);
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -61,46 +68,6 @@ class DashboardCard extends StatelessWidget {
                     ),
                     child: Stack(
                       children: [
-                        // Displaying "Left" text at top-left and bottom-left
-                        Positioned(
-                          top: 10,
-                          left: 10, // Position "Left" text on the top-left
-                          child: Text(
-                            WEATHER_IRRADIATION,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-
-                        // Displaying "Right" text at top-right and bottom-right
-                        Positioned(
-                          top: 10,
-                          right: 10, // Position "Right" text on the top-right
-                          child: Text(
-                            '${double.parse(IRRADIATION).toStringAsFixed(1)} Kw/m2',
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 10,
-                          right:
-                              10, // Position "Right" text on the bottom-right
-                          child: Text(
-                            'PR = $PR_TODAY',
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
                         Tooltip(
                           message: '${currentValue2.toStringAsFixed(2)}%',
                           child: SfRadialGauge(
@@ -121,7 +88,7 @@ class DashboardCard extends StatelessWidget {
                                 pointers: <GaugePointer>[
                                   RangePointer(
                                     value: currentValue2,
-                                    color: Colors.orange,
+                                    color: importColor,
                                     width: 0.99,
                                     sizeUnit: GaugeSizeUnit.factor,
                                   ),
@@ -130,9 +97,9 @@ class DashboardCard extends StatelessWidget {
                                   GaugeAnnotation(
                                     widget: Center(
                                       child: Text(
-                                        '$displayLabel%',
+                                        '$GRID_IMP_TOTAL_POWER_LIVE_PERCENT%',
                                         style: const TextStyle(
-                                          fontSize: 15,
+                                          fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -161,7 +128,7 @@ class DashboardCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    child: SolarDashboardCardData(
+                    child: GridImportCardData(
                       value1: '20',
                       Apiresponse: response,
                     ),
