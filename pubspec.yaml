@@ -15,7 +15,8 @@ dependencies:
   http: ^1.2.2
   syncfusion_flutter_gauges: ^20.4.43
   fl_chart: ^0.40.0
-
+  syncfusion_flutter_charts: ^20.4.43
+  intl: ^0.18.1
 
 
 
