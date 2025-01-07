@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:testapp/colors.dart';
+import 'package:testapp/dashboard/charts/string_data_chart.dart';
 
 class Stringdata extends StatelessWidget {
   final Map<String, dynamic>? response;
@@ -11,7 +12,7 @@ class Stringdata extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stringInfo =
+    final List<dynamic> stringInfo =
         response?['INDIVDIUAL_INVERTER_DATA_SOLAR']?[0]?['STRING_INFO'] ?? [];
 
     return Card(
@@ -22,6 +23,7 @@ class Stringdata extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 5),
+          // Header Card
           Card(
             elevation: 4,
             color: primaryColor, // Ensure this is defined in colors.dart
@@ -29,12 +31,12 @@ class Stringdata extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(8.0),
               child: Container(
-                width: double.infinity, // Take up the full width
+                width: double.infinity,
                 child: const Text(
-                  'String data',
-                  textAlign: TextAlign.center, // Center the text
+                  'String Data',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -46,13 +48,14 @@ class Stringdata extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          // Use Wrap instead of Column
+
+          // String Info Cards
           Wrap(
             spacing: 8.0, // Space between cards horizontally
             runSpacing: 8.0, // Space between cards vertically
             children: stringInfo.map<Widget>((item) {
-              final valueAvgToday = item['VALUE'];
-              final statusColor = item['STATUS_COLOUR_BACKGROUND'];
+              final valueAvgToday = item['VALUE'] ?? 'N/A';
+              final statusColor = item['STATUS_COLOUR_BACKGROUND'] ?? '#FFFFFF';
 
               return Card(
                 elevation: 4,
@@ -73,6 +76,15 @@ class Stringdata extends StatelessWidget {
                 ),
               );
             }).toList(),
+          ),
+          const SizedBox(height: 10),
+
+          // String Data Chart
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0.0),
+            child: StringDataChart(
+              response: response,
+            ),
           ),
         ],
       ),

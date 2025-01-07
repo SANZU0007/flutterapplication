@@ -13,22 +13,22 @@ class GridImportCardData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Safely check if Apiresponse is null or not and provide a fallback
-    String capacity = Apiresponse?['ACDB_CAPACITY_DASHBOARD'] ?? "No data";
+    String capacity = Apiresponse?['GRID_IMP_CAPACITY_DASHBOARD'] ?? "No data";
     String currentPower =
-        Apiresponse?['SOLAR_TOTAL_POWER_LIVE_DASHBOARD'] ?? "No data";
+        Apiresponse?['GRID_IMP_TOTAL_POWER_LIVE_DASHBOARD'] ?? "No data";
     String gfUnitsKwDay = Apiresponse?['GF_TODAY'] ?? "No data";
 
     String Energy_Toady =
-        Apiresponse?['SOLAR_ENERGY_TODAY_TOTAL_DASHBOARD'] ?? "No data";
+        Apiresponse?['GRID_IMP_ENERGY_TODAY_TOTAL_DASHBOARD'] ?? "No data";
     String ThisYear =
-        Apiresponse?['SOLAR_ENERGY_THIS_YEAR_DASHBOARD'] ?? "No data";
+        Apiresponse?['GRID_IMP_ENERGY_THIS_YEAR_TOTAL_DASHBOARD'] ?? "No data";
     String ThisMonth =
-        Apiresponse?['SOLAR_ENERGY_THIS_MONTH_DASHBOARD'] ?? "No data";
+        Apiresponse?['GRID_IMP_ENERGY_THIS_MONTH_TOTAL_DASHBOARD'] ?? "No data";
     String Yestrday =
-        Apiresponse?['SOLAR_ENERGY_YESTERDAY_TOTAL_DASHBOARD'] ?? "No data";
+        Apiresponse?['GRID_IMP_ENERGY_YESTERDAY_TOTAL_DASHBOARD'] ?? "No data";
 
     String Totalenergy =
-        Apiresponse?['SOLAR_TOTAL_ENERGY_LIVE_DASHBOARD'] ?? "No data";
+        Apiresponse?['GRID_IMP_TOTAL_ENERGY_LIVE_DASHBOARD'] ?? "No data";
 
     return Padding(
       padding: const EdgeInsets.all(0.0),
