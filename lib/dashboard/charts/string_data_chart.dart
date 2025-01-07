@@ -48,14 +48,25 @@ class _StringDataChartState extends State<StringDataChart> {
             List<String>.from(data['GRAPH_DATA'] ?? []);
 
         setState(() {
-          chartData = List.generate(
-            graphData.length,
-            (index) => ChartData(
-              x: index + 6, // X values start from 6
-              y: double.parse(graphData[
-                  index]), // Convert the string to double for the Y value
-            ),
-          );
+          if (period == 'DAYS') {
+            final DateTime today = DateTime.now();
+            chartData = List.generate(
+              graphData.length,
+              (index) => ChartData(
+                x: today.day -
+                    index, // Reverse order starting from today's date
+                y: double.parse(graphData[index]),
+              ),
+            );
+          } else {
+            chartData = List.generate(
+              graphData.length,
+              (index) => ChartData(
+                x: index + 6,
+                y: double.parse(graphData[index]),
+              ),
+            );
+          }
         });
       } else {
         throw Exception('Failed to load data');
@@ -67,13 +78,23 @@ class _StringDataChartState extends State<StringDataChart> {
 
   @override
   Widget build(BuildContext context) {
+    int minimumValue = 6;
+    int maximumValue = 18;
+
+    if (period == 'DAYS') {
+      // Set minimum to today's date (day) and adjust maximum dynamically
+      final DateTime today = DateTime.now();
+      minimumValue = today.day;
+      maximumValue = minimumValue + chartData.length - 1;
+    }
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(1),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(3.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -98,9 +119,8 @@ class _StringDataChartState extends State<StringDataChart> {
                       fontWeight: FontWeight.bold, // Bold title
                     ),
                   ),
-                  minimum: 6, // Start the X axis from 6
-                  maximum:
-                      18, // Adjust the maximum value based on the new starting point
+                  minimum: minimumValue.toDouble(),
+                  maximum: maximumValue.toDouble(),
                   interval: 1, // Set interval to show every value
                   labelStyle: TextStyle(
                     fontSize: 12, // Label font size
@@ -140,89 +160,35 @@ class _StringDataChartState extends State<StringDataChart> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // No border radius
-                  ),
-                  child: InkWell(
-                    onTap: () => _updatePeriod('HOURS'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        "HOURLY",
-                        style: TextStyle(
-                          fontSize: 10, // Adjust font size
-                          fontWeight:
-                              FontWeight.bold, // Optional: Make text bold
-                          color: Colors.black, // Text color
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // No border radius
-                  ),
-                  child: InkWell(
-                    onTap: () => _updatePeriod('DAYS'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        "DAILY",
-                        style: TextStyle(
-                          fontSize: 10, // Adjust font size
-                          fontWeight:
-                              FontWeight.bold, // Optional: Make text bold
-                          color: Colors.black, // Text color
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // No border radius
-                  ),
-                  child: InkWell(
-                    onTap: () => _updatePeriod('MONTHLY'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        "MONTHLY",
-                        style: TextStyle(
-                          fontSize: 16, // Adjust font size
-                          fontWeight:
-                              FontWeight.bold, // Optional: Make text bold
-                          color: Colors.black, // Text color
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero, // No border radius
-                  ),
-                  child: InkWell(
-                    onTap: () => _updatePeriod('YEARLY'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        "YEARLY",
-                        style: TextStyle(
-                          fontSize: 16, // Adjust font size
-                          fontWeight:
-                              FontWeight.bold, // Optional: Make text bold
-                          color: Colors.black, // Text color
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                _buildPeriodButton('HOURS'),
+                _buildPeriodButton('DAYS'),
+                _buildPeriodButton('MONTHS'),
+                _buildPeriodButton('YEARS'),
               ],
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPeriodButton(String periodLabel) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
+      child: InkWell(
+        onTap: () => _updatePeriod(periodLabel),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Text(
+            periodLabel,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
         ),
       ),
     );
