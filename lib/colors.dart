@@ -6,7 +6,7 @@ const Color primaryColorbg = Color(0xFFFFFFFF); // Example purple color
 
 const Color primaryColorblue = Color(0xD842B6D9); // Example purple color
 
-const Color transparentWhite = Color(0xEAD9D6D6); // Example purple color
+const Color transparentWhite = Color(0xEA070000); // Example purple color
 
 const Color importColor = Color(0xDBFF8F85); // Example purple color
 

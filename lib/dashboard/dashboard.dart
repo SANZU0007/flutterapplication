@@ -14,17 +14,12 @@ import 'dashboard_appbar.dart';
 
 class Dashboard extends StatefulWidget {
   final String name;
-  final String key1;
-  final String key2;
-  final String key3;
+
   final String apiKey;
 
   const Dashboard({
     super.key,
     required this.name,
-    required this.key1,
-    required this.key2,
-    required this.key3,
     required this.apiKey,
   });
 
@@ -94,6 +89,8 @@ class _DashboardState extends State<Dashboard> {
       appBar: DashboardAppBar(
         fetchData: fetchData,
         displayID: _SYS_ID ?? '0',
+        names: widget.name ?? '0',
+        apiKeys: widget.apiKey ?? '0',
       ),
       body: Padding(
         padding: const EdgeInsets.all(0.0),
@@ -106,10 +103,24 @@ class _DashboardState extends State<Dashboard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     // User name card
-                    Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
+                    Container(
+                      width: double
+                          .infinity, // Set the width to full available space
+
+                      margin: const EdgeInsets.all(5.0),
+                      decoration: BoxDecoration(
+                        color: Colors
+                            .white, // Set background color (same as Card by default)
                         borderRadius: BorderRadius.circular(2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black
+                                .withOpacity(0.1), // Add a subtle shadow
+                            spreadRadius: 1,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2), // Shadow position
+                          ),
+                        ],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),

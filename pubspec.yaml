@@ -18,8 +18,9 @@ dependencies:
   syncfusion_flutter_charts: ^20.4.54
   intl: ^0.18.0
   syncfusion_flutter_core: ^20.4.54
-
-
+  shared_preferences: ^2.2.0
+  path_provider: ^2.0.9
+  flutter_secure_storage: ^5.0.2
 
 
 

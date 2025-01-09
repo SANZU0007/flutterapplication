@@ -54,9 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
             MaterialPageRoute(
               builder: (context) => Dashboard(
                 name: data['NAME'] ?? 'N/A',
-                key1: data['KEY_1'] ?? 'N/A',
-                key2: data['KEY_2'] ?? 'N/A',
-                key3: data['KEY_3'] ?? 'N/A',
                 apiKey: data['KEY'] ?? 'N/A',
               ),
             ),
