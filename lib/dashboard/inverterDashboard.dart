@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:testapp/colors.dart';
 
 class Inverterdashboard extends StatelessWidget {
   final String value1;
@@ -41,33 +42,19 @@ class Inverterdashboard extends StatelessWidget {
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.all(0.0),
-                  margin: const EdgeInsets.all(5.0),
+                  margin: const EdgeInsets.all(2.0),
                   decoration: BoxDecoration(
-                    color: Colors
-                        .blueAccent, // Use a slightly different blue or gradient
+                    color:
+                        InverterTitleColor, // Use a slightly different blue or gradient
                     borderRadius: BorderRadius.circular(1), // Rounded corners
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 2),
-                        blurRadius: 4,
-                      ),
-                    ],
                   ),
                   child: Text(
                     '${item['INVERTER_NAME'] ?? 'N/A'} | ${item['CAPACITY_DASHBAORD'] ?? 'N/A'}',
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors
-                          .white, // Ensure the text is readable on the blue background
+                      fontSize: 15,
+                      color:
+                          blackColor, // Ensure the text is readable on the blue background
                       letterSpacing: 1.2, // Spacing for better readability
-                      shadows: [
-                        Shadow(
-                          offset: Offset(1, 1),
-                          blurRadius: 4,
-                        ),
-                      ],
                     ),
                   ),
                 ),
@@ -107,7 +94,7 @@ class Inverterdashboard extends StatelessWidget {
                                   // Full circle that fills up
                                   RangePointer(
                                     value: powerValue,
-                                    color: Colors.orange, // Full circle color
+                                    color: solarColor, // Full circle color
                                     width: 1.00,
                                     sizeUnit: GaugeSizeUnit.factor,
                                   ),

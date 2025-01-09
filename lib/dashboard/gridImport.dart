@@ -88,7 +88,7 @@ class Gridimport extends StatelessWidget {
                                 pointers: <GaugePointer>[
                                   RangePointer(
                                     value: currentValue2,
-                                    color: importColor,
+                                    color: gridExportColor,
                                     width: 0.99,
                                     sizeUnit: GaugeSizeUnit.factor,
                                   ),

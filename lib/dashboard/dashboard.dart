@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:testapp/colors.dart';
+import 'package:testapp/dashboard/charts/grid_export_chart.dart';
+import 'package:testapp/dashboard/charts/grid_import_chart.dart';
+import 'package:testapp/dashboard/charts/string_data_chart.dart';
 import 'package:testapp/dashboard/dashboard_card.dart';
 import 'package:testapp/dashboard/gridExport.dart';
 import 'package:testapp/dashboard/gridImport.dart';
@@ -109,22 +112,22 @@ class _DashboardState extends State<Dashboard> {
                         borderRadius: BorderRadius.circular(2),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(5.0),
                         child: Text(
                           '${widget.name},  | $_LAST_UPDATED',
                           textAlign: TextAlign.center, // Center the text
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: primaryColor,
+                            color: Colors.black,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 5),
+
                     Card(
                       elevation: 4,
-                      color: primaryColor,
+                      color: solarColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2),
                       ),
@@ -175,7 +178,7 @@ class _DashboardState extends State<Dashboard> {
                     ],
                     Card(
                       elevation: 4,
-                      color: importColor,
+                      color: gridImportColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2),
                       ),
@@ -204,9 +207,15 @@ class _DashboardState extends State<Dashboard> {
                           // Provide an appropriate label
                           response: _TotalApiResponse,
                         )),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 0.0),
+                      child: GridImportChart(
+                        response: _TotalApiResponse,
+                      ),
+                    ),
                     Card(
                       elevation: 4,
-                      color: exportColor,
+                      color: gridExportColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2),
                       ),
@@ -234,6 +243,12 @@ class _DashboardState extends State<Dashboard> {
                           // Provide an appropriate label
                           response: _TotalApiResponse,
                         )),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 0.0),
+                      child: GridExportchartData(
+                        response: _TotalApiResponse,
+                      ),
+                    ),
                   ],
                 ),
               ),

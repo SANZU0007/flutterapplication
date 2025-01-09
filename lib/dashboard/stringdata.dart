@@ -26,12 +26,12 @@ class Stringdata extends StatelessWidget {
           // Header Card
           Card(
             elevation: 4,
-            color: primaryColor, // Ensure this is defined in colors.dart
+            color: solarColor, // Ensure this is defined in colors.dart
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(2),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(1.0),
               child: Container(
                 width: double.infinity,
                 child: const Text(
@@ -39,9 +39,8 @@ class Stringdata extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color:
-                        primaryColorbg, // Ensure this is defined in colors.dart
+
+                    color: blackColor, // Ensure this is defined in colors.dart
                   ),
                 ),
               ),
@@ -69,8 +68,7 @@ class Stringdata extends StatelessWidget {
                     '$valueAvgToday',
                     style: const TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: blackColor,
                     ),
                   ),
                 ),

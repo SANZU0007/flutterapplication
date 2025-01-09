@@ -1,24 +1,24 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_charts/charts.dart'; // Correct import for charts
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // For JSON decoding
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:testapp/colors.dart'; // Import syncfusion_flutter_charts
 
 class StringDataChart extends StatefulWidget {
   final Map<String, dynamic>? response;
 
-  const StringDataChart({
-    Key? key,
-    this.response,
-  }) : super(key: key);
+  const StringDataChart({Key? key, this.response}) : super(key: key);
 
   @override
   _StringDataChartState createState() => _StringDataChartState();
 }
 
 class _StringDataChartState extends State<StringDataChart> {
-  List<ChartData> chartData = [];
-  late String apikey;
+  String apikey = '';
   String period = 'HOURS'; // Default to HOURLY
+  String formuila = 'HOURS'; // Default to HOURLY
+  List<String> strings = [];
+  List<String> graphData = [];
 
   @override
   void initState() {
@@ -27,47 +27,50 @@ class _StringDataChartState extends State<StringDataChart> {
     _fetchGraphData();
   }
 
-  // Function to update period and fetch new data
   void _updatePeriod(String newPeriod) {
     setState(() {
       period = newPeriod;
     });
-    _fetchGraphData(); // Fetch data based on the selected period
+    _fetchGraphData();
   }
 
   Future<void> _fetchGraphData() async {
     final url =
-        'https://esenz.live/esenzMobileAPISolarPowerHourlyRedirect.aspx?KEY=${apikey}&SOURCE=WEB&POINTS=20&PARA=SOLAR&PERIOD=$period';
+        'https://esenz.live/esenzMobileAPISolarPowerHourlyRedirect.aspx?KEY=$apikey&SOURCE=WEB&POINTS=20&PARA=SOLAR&PERIOD=$period';
 
     try {
       final response = await http.get(Uri.parse(url));
-      print(period);
+      print('Fetching data for period: $period');
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        final List<String> graphData =
-            List<String>.from(data['GRAPH_DATA'] ?? []);
-
         setState(() {
+          final legendData = List<String>.from(data['LEGEND'] ?? []);
+          final graphDataPoints = List<String>.from(data['GRAPH_DATA'] ?? []);
+
           if (period == 'DAYS') {
-            final DateTime today = DateTime.now();
-            chartData = List.generate(
-              graphData.length,
-              (index) => ChartData(
-                x: today.day -
-                    index, // Reverse order starting from today's date
-                y: double.parse(graphData[index]),
-              ),
-            );
+            if (legendData.length > 10) {
+              strings = legendData.sublist(legendData.length - 10);
+              graphData = graphDataPoints.sublist(graphDataPoints.length - 10);
+            } else {
+              strings = legendData;
+              graphData = graphDataPoints;
+            }
+          } else if (period == 'MONTHS') {
+            if (legendData.length > 12) {
+              strings = legendData.sublist(legendData.length - 12);
+              graphData = graphDataPoints.sublist(graphDataPoints.length - 12);
+            } else {
+              strings = legendData;
+              graphData = graphDataPoints;
+            }
           } else {
-            chartData = List.generate(
-              graphData.length,
-              (index) => ChartData(
-                x: index + 6,
-                y: double.parse(graphData[index]),
-              ),
-            );
+            strings = legendData;
+            graphData = graphDataPoints;
           }
         });
+        print(strings);
+        print(graphData);
       } else {
         throw Exception('Failed to load data');
       }
@@ -78,115 +81,74 @@ class _StringDataChartState extends State<StringDataChart> {
 
   @override
   Widget build(BuildContext context) {
-    int minimumValue = 6;
-    int maximumValue = 18;
+    List<ChartData> chartData = List.generate(strings.length, (index) {
+      return ChartData(
+        label: strings[index],
+        value: double.tryParse(graphData[index].trim()) ?? 0,
+      );
+    });
 
-    if (period == 'DAYS') {
-      // Set minimum to today's date (day) and adjust maximum dynamically
-      final DateTime today = DateTime.now();
-      minimumValue = today.day;
-      maximumValue = minimumValue + chartData.length - 1;
-    }
-
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(1),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(3.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Building-like Chart",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    return Container(
+      color: Colors.grey[200], // Set your desired background color here
+      child: Column(
+        children: [
+          SizedBox(
+            height: 300,
+            child: SfCartesianChart(
+              primaryXAxis: CategoryAxis(),
+              primaryYAxis: NumericAxis(),
+              title: ChartTitle(
+                text: 'Solar Power graph (Energy (kWh) v/s $period)',
+                textStyle: TextStyle(fontSize: 10),
               ),
-            ),
-            const SizedBox(height: 16),
-            // Bar chart with X and Y axes
-            Container(
-              height: 250,
-              child: SfCartesianChart(
-                primaryXAxis: NumericAxis(
-                  title: AxisTitle(
-                    text: 'X Axis', // X Axis title
-                    textStyle: TextStyle(
-                      fontSize: 14, // Adjust size
-                      color: Colors.black, // Adjust color
-                      fontWeight: FontWeight.bold, // Bold title
-                    ),
-                  ),
-                  minimum: minimumValue.toDouble(),
-                  maximum: maximumValue.toDouble(),
-                  interval: 1, // Set interval to show every value
-                  labelStyle: TextStyle(
-                    fontSize: 12, // Label font size
-                    color: Colors.black, // Label color
-                  ),
+              tooltipBehavior: TooltipBehavior(enable: true),
+              series: <ChartSeries>[
+                ColumnSeries<ChartData, String>(
+                  dataSource: chartData,
+                  xValueMapper: (ChartData data, _) => data.label,
+                  yValueMapper: (ChartData data, _) => data.value,
+                  dataLabelSettings: DataLabelSettings(isVisible: true),
+                  color: solarColor,
                 ),
-                primaryYAxis: NumericAxis(
-                  title: AxisTitle(
-                    text: 'Y Axis', // Y Axis title
-                    textStyle: TextStyle(
-                      fontSize: 14, // Adjust size
-                      color: Colors.black, // Adjust color
-                      fontWeight: FontWeight.bold, // Bold title
-                    ),
-                  ),
-                ),
-                series: <ChartSeries>[
-                  ColumnSeries<ChartData, int>(
-                    dataSource: chartData,
-                    xValueMapper: (ChartData data, _) => data.x,
-                    yValueMapper: (ChartData data, _) => data.y,
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(2),
-                    dataLabelSettings: DataLabelSettings(
-                      isVisible: true, // Show the data labels
-                      textStyle: TextStyle(
-                          fontSize: 12, color: Colors.black), // Label style
-                      labelIntersectAction: LabelIntersectAction.shift,
-                      offset: Offset(0,
-                          -10), // Adjust the offset to position the label higher
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Buttons to select the period
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildPeriodButton('HOURS'),
-                _buildPeriodButton('DAYS'),
-                _buildPeriodButton('MONTHS'),
-                _buildPeriodButton('YEARS'),
               ],
-            )
-          ],
-        ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildPeriodButton('HOURS'),
+              SizedBox(width: 1),
+              _buildPeriodButton('DAYS'),
+              SizedBox(width: 1),
+              _buildPeriodButton('MONTHS'),
+              SizedBox(width: 1),
+              _buildPeriodButton('YEARS'),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildPeriodButton(String periodLabel) {
+    bool isSelected = period == periodLabel;
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero,
+        borderRadius: BorderRadius.circular(2),
       ),
+      color: isSelected ? primaryColorbg : solarColor,
+      elevation: isSelected ? 4 : 2,
       child: InkWell(
         onTap: () => _updatePeriod(periodLabel),
+        splashColor: Colors.blue,
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(8.10),
           child: Text(
             periodLabel,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 8,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: isSelected ? Colors.black : Colors.black,
             ),
           ),
         ),
@@ -196,8 +158,8 @@ class _StringDataChartState extends State<StringDataChart> {
 }
 
 class ChartData {
-  final int x;
-  final double y;
+  final String label;
+  final double value;
 
-  ChartData({required this.x, required this.y});
+  ChartData({required this.label, required this.value});
 }

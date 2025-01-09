@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:testapp/colors.dart';
 import 'package:testapp/dashboard/solar_dashboard_card_data.dart';
 
 class DashboardCard extends StatelessWidget {
@@ -121,7 +122,7 @@ class DashboardCard extends StatelessWidget {
                                 pointers: <GaugePointer>[
                                   RangePointer(
                                     value: currentValue2,
-                                    color: Colors.orange,
+                                    color: solarColor,
                                     width: 0.99,
                                     sizeUnit: GaugeSizeUnit.factor,
                                   ),
